@@ -5,21 +5,26 @@
 <header>
 	<h1>Todo</h1>
 
-	<input
-		type="checkbox"
-		name="dark-theme"
-		id="dark-theme"
-		class="check-dark-theme"
-		aria-label="Dark theme checkbox"
-	/>
+	<div class="check-dark-theme">
+		<input
+			type="checkbox"
+			id="dark-theme"
+			name="dark-theme"
+			class="check-dark-theme"
+			aria-label="Dark theme checkbox"
+		/>
+		<label for="dark-theme" aria-label="Dark theme checkbox" />
+	</div>
 </header>
 
 <main>
-	<form class="todo-new">
-		<input type="text" name="todo-new" aria-label="Add new todo" />
-	</form>
+	<section class="todo-new">
+		<form>
+			<input type="text" name="todo-new" aria-label="Add new todo" />
+		</form>
+	</section>
 
-	<div class="todo-list">
+	<section class="todo-list">
 		<Todo
 			>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Omnis,
 			ex.</Todo
@@ -40,9 +45,9 @@
 			<p class="light"><!-- Add dynamic number -->3 items left</p>
 			<button class="todo-delete-completed">Clear Completed</button>
 		</div>
-	</div>
+	</section>
 
-	<div class="todo-filter">
+	<section class="todo-filter">
 		<input type="radio" name="todo-filter" id="todo-filter-all" />
 		<label for="todo-filter-all">All</label>
 
@@ -51,7 +56,7 @@
 
 		<input type="radio" name="todo-filter" id="todo-filter-completed" />
 		<label for="todo-filter-completed">Completed</label>
-	</div>
+	</section>
 
 	<p class="light">Drag and drop to reorder list</p>
 </main>
@@ -85,8 +90,8 @@
 		--clr-neutral-10: hsl(235, 19%, 35%);
 
 		/* Images */
-		--bgi-header-desktop: "/images/bg-desktop-light.jpg"
-		--bgi-header-desktop: "/images/bg-mobile-light.jpg"
+		--bgi-header-desktop: url("/images/bg-desktop-light.jpg");
+		--bgi-header-mobile: url("/images/bg-mobile-light.jpg");
 	}
 
 	* {
@@ -99,16 +104,37 @@
 	}
 
 	:global(body) {
-		padding: 0;
+		padding: 5%;
 		margin: 0;
+		min-height: 100vh;
 
-		--indentation: 5%;
+		background-color: color-mix(
+			in lab,
+			var(--clr-neutral-75) 70%,
+			transparent
+		);
+		background-image: var(--bgi-header-mobile);
+		background-repeat: no-repeat;
+		background-position: top;
+		background-size: contain;
+
+		color: var(--clr-neutral-10);
 	}
 
+	header,
+	main,
+	footer {
+		width: clamp(40%, 30rem, 90%);
+		margin: 0 auto;
+	}
 	/* Main */
 
-	main {
-		padding: var(--indentation);
+	section {
+		background-color: var(--clr-neutral-100);
+		margin: 1em 0;
+		padding: 0.5em 0;
+
+		border-radius: 5px;
 	}
 
 	/* Header & Footer */
@@ -116,17 +142,28 @@
 	header {
 		display: flex;
 		justify-content: space-between;
+		align-items: baseline;
 
-		padding: var(--indentation);
-
-
+		padding: 1rem 0;
 	}
-
 	h1 {
 		text-transform: uppercase;
 		font-size: 1.5rem;
 		letter-spacing: 0.5rem;
 		color: var(--clr-neutral-100);
+	}
+	.check-dark-theme {
+		--_theme-state: url("/images/icon-moon.svg");
+	}
+	.check-dark-theme > input {
+		display: none;
+	}
+	.check-dark-theme > label {
+		display: block;
+		background: var(--_theme-state) no-repeat center;
+		background-size: contain;
+		width: 1rem;
+		height: 1rem;
 	}
 
 	footer {
@@ -136,5 +173,13 @@
 		width: 100vw;
 		text-align: center;
 		font-size: 0.5rem;
+	}
+
+	/* Desktop view */
+
+	@media (width >= 600px) {
+		:global(body) {
+			background-image: var(--bgi-header-desktop);
+		}
 	}
 </style>
