@@ -1,5 +1,8 @@
 <script lang="ts">
+	import CustomCheckbox from "$lib/components/customCheckbox.svelte";
 	import Todo from "$lib/components/todo.svelte";
+
+	let filter: "all" | "active" | "completed" = "all";
 </script>
 
 <header>
@@ -20,7 +23,14 @@
 <main>
 	<section class="todo-new">
 		<form>
-			<input type="text" name="todo-new" aria-label="Add new todo" />
+			<CustomCheckbox disabled />
+			<input
+				type="text"
+				name="todo-new"
+				aria-label="Add new todo"
+				placeholder="Create new todo..."
+				maxlength="64"
+			/>
 		</form>
 	</section>
 
@@ -43,22 +53,61 @@
 		<!-- Footer -->
 		<div class="todo-list-footer">
 			<p class="light"><!-- Add dynamic number -->3 items left</p>
+
+			<div class="todo-filter desktop">
+				<label for="todo-filter-all" class:checked={filter === "all"}
+					>All</label
+				>
+				<label
+					for="todo-filter-active"
+					class:checked={filter === "active"}>Active</label
+				>
+				<label
+					for="todo-filter-completed"
+					class:checked={filter === "completed"}>Completed</label
+				>
+			</div>
+
 			<button class="todo-delete-completed">Clear Completed</button>
 		</div>
 	</section>
 
 	<section class="todo-filter">
-		<input type="radio" name="todo-filter" id="todo-filter-all" />
-		<label for="todo-filter-all">All</label>
+		<input
+			type="radio"
+			name="todo-filter"
+			id="todo-filter-all"
+			bind:group={filter}
+			value="all"
+		/>
+		<label for="todo-filter-all" class:checked={filter === "all"}>All</label
+		>
 
-		<input type="radio" name="todo-filter" id="todo-filter-active" />
-		<label for="todo-filter-active">Active</label>
+		<input
+			type="radio"
+			name="todo-filter"
+			id="todo-filter-active"
+			bind:group={filter}
+			value="active"
+		/>
+		<label for="todo-filter-active" class:checked={filter === "active"}
+			>Active</label
+		>
 
-		<input type="radio" name="todo-filter" id="todo-filter-completed" />
-		<label for="todo-filter-completed">Completed</label>
+		<input
+			type="radio"
+			name="todo-filter"
+			id="todo-filter-completed"
+			bind:group={filter}
+			value="completed"
+		/>
+		<label
+			for="todo-filter-completed"
+			class:checked={filter === "completed"}>Completed</label
+		>
 	</section>
 
-	<p class="light">Drag and drop to reorder list</p>
+	<p class="informant">Drag and drop to reorder list</p>
 </main>
 
 <footer>
@@ -102,9 +151,13 @@
 		font-family: "Josefin Sans", sans-serif;
 		font-size: 18px;
 	}
+	:global(input),
+	:blobal(button) {
+		font-family: "Josefin Sans", sans-serif;
+	}
 
 	:global(body) {
-		padding: 5%;
+		padding: 0;
 		margin: 0;
 		min-height: 100vh;
 
@@ -124,7 +177,7 @@
 	header,
 	main,
 	footer {
-		width: clamp(40%, 30rem, 90%);
+		width: clamp(30%, 25rem, 90%);
 		margin: 0 auto;
 	}
 	/* Main */
@@ -132,11 +185,98 @@
 	section {
 		background-color: var(--clr-neutral-100);
 		margin: 1em 0;
-		padding: 0.5em 0;
+		padding: 1em;
 
 		border-radius: 5px;
+		box-shadow: 0 0.25rem 0.5rem hsla(0, 0%, 0%, 0.15);
 	}
 
+	.todo-new > form {
+		display: flex;
+		gap: 0.5em;
+		align-items: center;
+	}
+	.todo-new input {
+		width: 100%;
+		border: none;
+		padding: 0;
+
+		font-size: 0.7rem;
+
+		caret-color: var(--clr-primary);
+		outline: none;
+	}
+
+	.todo-list {
+		padding: 0.5em 0;
+	}
+	.todo-list-footer {
+		display: flex;
+		align-items: end;
+		justify-content: space-between;
+
+		margin: 1em;
+
+		font-size: 0.7rem;
+		color: var(--clr-neutral-25);
+	}
+	.todo-list-footer > p {
+		margin: 0;
+	}
+	.todo-list-footer > button {
+		background-color: transparent;
+		border: none;
+
+		font-size: 0.7rem;
+		color: var(--clr-neutral-25);
+
+		cursor: pointer;
+	}
+	.todo-list-footer > button:hover {
+		color: var(--clr-neutral-10);
+	}
+
+	.todo-filter {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-evenly;
+		gap: 1em;
+
+		color: var(--clr-neutral-25);
+		font-size: 0.85rem;
+		font-weight: bold;
+	}
+	.todo-filter input {
+		display: none;
+	}
+	.todo-filter label {
+		cursor: pointer;
+	}
+	.todo-filter input:checked + label {
+		color: var(--clr-primary);
+	}
+	.todo-filter
+		:not(input:checked, input:disabled)
+		+ label:not(.checked):hover {
+		color: var(--clr-neutral-10);
+	}
+
+	.todo-list-footer > .todo-filter {
+		display: none;
+
+		font-size: 0.7rem;
+		font-weight: normal;
+	}
+	.checked {
+		color: var(--clr-primary);
+	}
+
+	.informant {
+		margin-top: 3em;
+		text-align: center;
+		font-size: 0.75rem;
+		color: var(--clr-neutral-25);
+	}
 	/* Header & Footer */
 
 	header {
@@ -180,6 +320,13 @@
 	@media (width >= 600px) {
 		:global(body) {
 			background-image: var(--bgi-header-desktop);
+		}
+
+		.todo-filter {
+			display: none;
+		}
+		.todo-list-footer > .todo-filter {
+			display: flex;
 		}
 	}
 </style>
