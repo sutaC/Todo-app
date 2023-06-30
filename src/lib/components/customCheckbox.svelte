@@ -28,7 +28,7 @@
 		height: var(--_size);
 
 		background-color: var(--clr-neutral-100);
-		border: 1px solid var(--clr-neutral-75);
+		border: 1px solid var(--clr-neutral-50);
 		border-radius: 100%;
 
 		cursor: pointer;

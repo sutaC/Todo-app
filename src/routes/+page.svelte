@@ -3,8 +3,39 @@
 	import Todo from "$lib/components/todo.svelte";
 
 	let filter: "all" | "active" | "completed" = "all";
+
+	// Theme save
+	let darkTheme: boolean = false;
+	try {
+		darkTheme = JSON.parse(localStorage.getItem("dark-theme") ?? "false");
+	} catch (error) {
+		console.error(error);
+	}
+	$: localStorage.setItem("dark-theme", JSON.stringify(darkTheme));
+
+	// ===
 </script>
 
+<svelte:head>
+	{#if darkTheme}
+		<style>
+			:root {
+				/* Light theme */
+				--clr-neutral-100: hsl(235, 24%, 19%); /* BG */
+				--clr-neutral-75: hsl(235, 21%, 11%); /* Section BG */
+				--clr-neutral-50: hsl(234, 11%, 52%); /* Checkbox border */
+				--clr-neutral-25: hsl(234, 11%, 52%); /* Light text */
+				--clr-neutral-10: hsl(234, 39%, 85%); /* Dark text */
+
+				/* Images */
+				--bgi-header-desktop: url("/images/bg-desktop-dark.jpg");
+				--bgi-header-mobile: url("/images/bg-mobile-dark.jpg");
+			}
+		</style>
+	{/if}
+</svelte:head>
+
+<!-- Main -->
 <header>
 	<h1>Todo</h1>
 
@@ -13,8 +44,8 @@
 			type="checkbox"
 			id="dark-theme"
 			name="dark-theme"
-			class="check-dark-theme"
 			aria-label="Dark theme checkbox"
+			bind:checked={darkTheme}
 		/>
 		<label for="dark-theme" aria-label="Dark theme checkbox" />
 	</div>
@@ -122,6 +153,7 @@
 	>.
 </footer>
 
+<!-- Style -->
 <style>
 	/* Preset */
 	@import url("https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;700&display=swap");
@@ -161,11 +193,7 @@
 		margin: 0;
 		min-height: 100vh;
 
-		background-color: color-mix(
-			in lab,
-			var(--clr-neutral-75) 70%,
-			transparent
-		);
+		background-color: var(--clr-neutral-75);
 		background-image: var(--bgi-header-mobile);
 		background-repeat: no-repeat;
 		background-position: top;
@@ -203,6 +231,8 @@
 
 		font-size: 0.7rem;
 
+		color: var(--clr-neutral-10);
+		background-color: transparent;
 		caret-color: var(--clr-primary);
 		outline: none;
 	}
@@ -290,20 +320,26 @@
 		text-transform: uppercase;
 		font-size: 1.5rem;
 		letter-spacing: 0.5rem;
-		color: var(--clr-neutral-100);
+		color: white;
 	}
-	.check-dark-theme {
-		--_theme-state: url("/images/icon-moon.svg");
-	}
+
 	.check-dark-theme > input {
 		display: none;
 	}
 	.check-dark-theme > label {
 		display: block;
-		background: var(--_theme-state) no-repeat center;
-		background-size: contain;
 		width: 1rem;
 		height: 1rem;
+
+		background-image: url("/images/icon-moon.svg");
+		background-repeat: no-repeat;
+		background-position: center;
+		background-size: contain;
+
+		cursor: pointer;
+	}
+	.check-dark-theme > input:checked + label {
+		background-image: url("/images/icon-sun.svg");
 	}
 
 	footer {
