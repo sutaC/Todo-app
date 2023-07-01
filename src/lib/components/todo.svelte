@@ -32,10 +32,10 @@
 </script>
 
 <div
+	id={todo.id.toString()}
 	class="todo"
 	class:checked
 	class:dragged
-	id={todo.id.toString()}
 	draggable="true"
 	on:dragstart={(e) => handleDragStart(e)}
 	on:dragend={() => (dragged = false)}
@@ -67,18 +67,19 @@
 		padding: 1em;
 
 		border-bottom: 1px solid var(--clr-neutral-75);
+
+		cursor: grab;
+	}
+	.todo:hover {
+		opacity: 0.8;
 	}
 
 	p {
 		margin: 0;
 		font-size: 0.7rem;
 		width: 100%;
-		cursor: default;
 		overflow-x: hidden;
 		word-wrap: break-word;
-	}
-	p:hover {
-		opacity: 0.8;
 	}
 
 	button {
@@ -101,6 +102,7 @@
 	}
 
 	.dragged {
+		cursor: grabbing;
 		opacity: 0.5;
 	}
 

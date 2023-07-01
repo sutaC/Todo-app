@@ -31,13 +31,20 @@
 	let newTdTitle = "";
 	const addNewTd = (event: Event) => {
 		event.preventDefault();
-		const newTd: TodoItem = {
-			id: $todos.length,
-			active: true,
-			title: newTdTitle,
-		};
-		todos.update((tds) => [newTd, ...tds]);
-		newTdTitle = "";
+
+		try {
+			const newTd: TodoItem = {
+				id: Math.random(),
+				active: true,
+				title: newTdTitle,
+			};
+
+			todos.update((tds) => [newTd, ...tds]);
+
+			newTdTitle = "";
+		} catch (error) {
+			console.error(error);
+		}
 	};
 
 	// Drag & Drop
