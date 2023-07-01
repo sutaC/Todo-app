@@ -6,20 +6,4 @@ export interface TodoItem {
 	title: string;
 }
 
-export const todos: Writable<Array<TodoItem>> = writable([
-	{
-		id: 1,
-		active: true,
-		title: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Omnis, ex.",
-	},
-	{
-		id: 2,
-		active: true,
-		title: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Omnis, ex.",
-	},
-	{
-		id: 3,
-		active: true,
-		title: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Omnis, ex.",
-	},
-]);
+export const todos: Writable<Array<TodoItem>> = writable([]);

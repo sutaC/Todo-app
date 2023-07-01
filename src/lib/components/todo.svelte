@@ -6,25 +6,40 @@
 
 	let checked = !todo.active;
 
-	// Functions
-
+	// Todo Functions
 	const changeActive = () => {
 		let newTds = $todos;
 		let newTd = newTds.find((td) => td.id === todo.id);
 		if (newTd) {
 			newTd.active = !checked;
 			todos.update(() => newTds);
-		} else {
-			console.error("Could not change state of todo.");
 		}
 	};
 
 	const deleteTodo = () => {
 		todos.update((tds) => tds.filter((td) => td.id !== todo.id));
 	};
+
+	// Drag & Drop
+	let dragged = false;
+
+	const handleDragStart = (event: DragEvent) => {
+		dragged = true;
+		if (event.target instanceof Element) {
+			event.dataTransfer?.setData("text/plain", event.target.id);
+		}
+	};
 </script>
 
-<div class="todo" class:checked id={todo.id.toString()}>
+<div
+	class="todo"
+	class:checked
+	class:dragged
+	id={todo.id.toString()}
+	draggable="true"
+	on:dragstart={(e) => handleDragStart(e)}
+	on:dragend={() => (dragged = false)}
+>
 	<CustomCheckbox
 		bind:checked
 		on:change={() => {
@@ -59,6 +74,8 @@
 		font-size: 0.7rem;
 		width: 100%;
 		cursor: default;
+		overflow-x: hidden;
+		word-wrap: break-word;
 	}
 	p:hover {
 		opacity: 0.8;
@@ -76,11 +93,15 @@
 		cursor: pointer;
 	}
 
-	/* Checked */
+	/* Events */
 
 	.checked p {
 		opacity: 0.25;
 		text-decoration: line-through;
+	}
+
+	.dragged {
+		opacity: 0.5;
 	}
 
 	/* Desktop view */

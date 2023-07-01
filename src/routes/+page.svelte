@@ -2,6 +2,7 @@
 	import CustomCheckbox from "$lib/components/customCheckbox.svelte";
 	import Todo from "$lib/components/todo.svelte";
 	import { todos, type TodoItem } from "$lib/stores/todos";
+	import type { is_empty } from "svelte/internal";
 
 	let filter: "all" | "active" | "completed" = "all";
 
@@ -22,8 +23,7 @@
 	}
 	$: localStorage.setItem("todos", JSON.stringify($todos));
 
-	// Functions
-
+	// Todo Functions
 	const clearDoneTds = () => {
 		todos.update((tds) => tds.filter((td) => td.active));
 	};
@@ -32,12 +32,37 @@
 	const addNewTd = (event: Event) => {
 		event.preventDefault();
 		const newTd: TodoItem = {
-			id: Math.random(),
+			id: $todos.length,
 			active: true,
 			title: newTdTitle,
 		};
 		todos.update((tds) => [newTd, ...tds]);
 		newTdTitle = "";
+	};
+
+	// Drag & Drop
+	const handleDrop = (event: DragEvent) => {
+		event.preventDefault();
+
+		const sourceId = Number(event.dataTransfer?.getData("text/plain"));
+
+		if (typeof sourceId === "number" && event.target instanceof Element) {
+			const targetId =
+				event.target.id.length > 0
+					? Number(event.target.id)
+					: Number(event.target.parentElement?.id);
+
+			const sourceIndex = $todos.findIndex((td) => td.id === sourceId);
+			const targetIndex = $todos.findIndex((td) => td.id === targetId);
+
+			let newTds = $todos;
+
+			const tmp = $todos[targetIndex];
+			newTds[targetIndex] = $todos[sourceIndex];
+			newTds[sourceIndex] = tmp;
+
+			todos.set(newTds);
+		}
 	};
 </script>
 
@@ -82,6 +107,7 @@
 			on:submit={(e) => {
 				addNewTd(e);
 			}}
+			autocomplete="off"
 		>
 			<CustomCheckbox disabled />
 			<input
@@ -91,17 +117,23 @@
 				placeholder="Create new todo..."
 				minlength="1"
 				maxlength="64"
+				required
 				bind:value={newTdTitle}
 			/>
 		</form>
 	</section>
 
 	<section class="todo-list">
-		{#each $todos as todo (todo.id)}
-			{#if filter === "all" || (filter === "active" && todo.active) || (filter === "completed" && !todo.active)}
-				<Todo {todo} />
-			{/if}
-		{/each}
+		<div
+			on:drop={(e) => handleDrop(e)}
+			on:dragover={(e) => e.preventDefault()}
+		>
+			{#each $todos as todo (todo.id)}
+				{#if filter === "all" || (filter === "active" && todo.active) || (filter === "completed" && !todo.active)}
+					<Todo {todo} />
+				{/if}
+			{/each}
+		</div>
 
 		<!-- Footer -->
 		<div class="todo-list-footer">
