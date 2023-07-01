@@ -1,6 +1,7 @@
 <script lang="ts">
 	import CustomCheckbox from "$lib/components/customCheckbox.svelte";
 	import Todo from "$lib/components/todo.svelte";
+	import { todos, type TodoItem } from "$lib/stores/todos";
 
 	let filter: "all" | "active" | "completed" = "all";
 
@@ -13,7 +14,31 @@
 	}
 	$: localStorage.setItem("dark-theme", JSON.stringify(darkTheme));
 
-	// ===
+	// Todos save
+	try {
+		todos.set(JSON.parse(localStorage.getItem("todos") ?? "[]"));
+	} catch (error) {
+		console.error(error);
+	}
+	$: localStorage.setItem("todos", JSON.stringify($todos));
+
+	// Functions
+
+	const clearDoneTds = () => {
+		todos.update((tds) => tds.filter((td) => td.active));
+	};
+
+	let newTdTitle = "";
+	const addNewTd = (event: Event) => {
+		event.preventDefault();
+		const newTd: TodoItem = {
+			id: Math.random(),
+			active: true,
+			title: newTdTitle,
+		};
+		todos.update((tds) => [newTd, ...tds]);
+		newTdTitle = "";
+	};
 </script>
 
 <svelte:head>
@@ -53,37 +78,34 @@
 
 <main>
 	<section class="todo-new">
-		<form>
+		<form
+			on:submit={(e) => {
+				addNewTd(e);
+			}}
+		>
 			<CustomCheckbox disabled />
 			<input
 				type="text"
 				name="todo-new"
 				aria-label="Add new todo"
 				placeholder="Create new todo..."
+				minlength="1"
 				maxlength="64"
+				bind:value={newTdTitle}
 			/>
 		</form>
 	</section>
 
 	<section class="todo-list">
-		<Todo
-			>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Omnis,
-			ex.</Todo
-		>
-
-		<Todo
-			>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Omnis,
-			ex.</Todo
-		>
-
-		<Todo
-			>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Omnis,
-			ex.</Todo
-		>
+		{#each $todos as todo (todo.id)}
+			{#if filter === "all" || (filter === "active" && todo.active) || (filter === "completed" && !todo.active)}
+				<Todo {todo} />
+			{/if}
+		{/each}
 
 		<!-- Footer -->
 		<div class="todo-list-footer">
-			<p class="light"><!-- Add dynamic number -->3 items left</p>
+			<p class="light">{$todos.length} items left</p>
 
 			<div class="todo-filter desktop">
 				<label for="todo-filter-all" class:checked={filter === "all"}
@@ -99,7 +121,12 @@
 				>
 			</div>
 
-			<button class="todo-delete-completed">Clear Completed</button>
+			<button
+				class="todo-delete-completed"
+				on:click={() => {
+					clearDoneTds();
+				}}>Clear Completed</button
+			>
 		</div>
 	</section>
 
