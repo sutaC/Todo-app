@@ -2,7 +2,6 @@
 	import CustomCheckbox from "$lib/components/customCheckbox.svelte";
 	import Todo from "$lib/components/todo.svelte";
 	import { todos, type TodoItem } from "$lib/stores/todos";
-	import type { is_empty } from "svelte/internal";
 
 	let filter: "all" | "active" | "completed" = "all";
 
